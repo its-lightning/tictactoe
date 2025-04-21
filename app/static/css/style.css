@@ -1,0 +1,463 @@
+/* Last updated: 2025-04-10 17:07:10 UTC
+ * Author: its-lightning
+ * Description: Dark-themed styles for Tic Tac Toe with MinMax and Alpha-Beta pruning
+ */
+
+/* Container Layout */
+body {
+    background: linear-gradient(to bottom, #000000, #1a1a1a);
+    color: #e0e0e0;
+    font-size: 1rem;
+}
+
+.page-container {
+    display: flex;
+    max-width: 90vw;
+    margin: 0 auto;
+    padding: 1.5rem;
+    gap: 1.5rem;
+}
+
+/* Algorithm Selection Section */
+.algorithm-section {
+    flex: 0 0 12rem;
+    padding: 1.5rem;
+    background: linear-gradient(to bottom right, #0d0d0d, #1c1c1c);
+    border-radius: 0.5rem;
+    margin-right: 1.25rem;
+}
+
+.algorithm-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+}
+
+.algo-btn {
+    padding: 0.75rem;
+    font-size: 1rem;
+    background: #2c2c2c;
+    color: #f0f0f0;
+    border: 1px solid #555;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.algo-btn:hover {
+    background: #3a3a3a;
+    border-color: #4CAF50;
+}
+
+.algo-btn.active {
+    background: #4CAF50;
+    color: black;
+    border-color: #4CAF50;
+}
+
+.algorithm-info {
+    padding: 1rem;
+    background: #121212;
+    border-radius: 0.3rem;
+    box-shadow: 0 1px 3px rgba(255,255,255,0.05);
+}
+
+.stats {
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.stats p {
+    margin: 0.3rem 0;
+}
+
+/* Game Section */
+.game-section {
+    flex: 0 0 25rem;
+}
+
+.game-info {
+    text-align: center;
+    margin-bottom: 1.25rem;
+}
+
+/* Game Board */
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+    margin: 1.25rem auto;
+    max-width: 20rem;
+    background: linear-gradient(to bottom right, #0a0a0a, #1a1a1a);
+}
+
+.cell {
+    aspect-ratio: 1;
+    background: #101010;
+    border: 2px solid #333;
+    font-size: 2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    user-select: none;
+    position: relative;
+    z-index: 1;
+}
+
+.cell:hover {
+    background: #1f1f1f;
+}
+
+.cell.X {
+    color: #2196F3;
+}
+
+.cell.O {
+    color: #F44336;
+}
+
+/* Visualization Section */
+.visualization-section {
+    flex: 1;
+    border-left: 2px solid #333;
+    padding-left: 2.5rem;
+    min-width: 37.5rem;
+    display: flex;
+    flex-direction: column;
+    background: #0e0e0e;
+}
+
+/* Tree Container */
+.tree-wrapper {
+    position: relative;
+    height: 85vh;
+    border: 1px solid #333;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: linear-gradient(to bottom right, #121212, #1f1f1f);
+}
+
+.tree-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+.tree-container:active {
+    cursor: grabbing;
+}
+
+/* Connections Layer */
+.connections-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: visible;
+}
+
+.connection-line {
+    stroke: #888;
+    stroke-width: 2px;
+    fill: none;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    vector-effect: non-scaling-stroke;
+}
+
+/* Tree Content */
+.tree-content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transform-origin: 0 0;
+    padding: 2.5rem 1rem;
+    z-index: 2;
+}
+
+.tree-level {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10vh;
+    position: relative;
+}
+
+.tree-level:last-child {
+    margin-bottom: 5vh;
+}
+
+/* Tree Nodes */
+.tree-node {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 2vw;
+    padding: 0.8rem;
+    background: #181818;
+    border-radius: 0.5rem;
+    border: 1px solid #2e2e2e;
+    box-shadow: 0 2px 6px rgba(255,255,255,0.05);
+    position: relative;
+    z-index: 2;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.tree-node:hover {
+    background: #202020;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 3;
+}
+
+/* Mini Board in Tree Node */
+.mini-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    width: 4.5rem;
+    height: 4.5rem;
+    background: #262626;
+    padding: 2px;
+    border-radius: 0.25rem;
+    border: 2px solid #333;
+}
+
+.mini-cell {
+    background: #121212;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #f0f0f0;
+}
+
+.mini-cell.X {
+    color: #2196F3;
+}
+
+.mini-cell.O {
+    color: #F44336;
+}
+
+/* Node Scores */
+.node-score {
+    position: absolute;
+    bottom: -1.8rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.2rem 0.6rem;
+    border-radius: 1rem;
+    font-size: 0.85rem;
+    font-weight: bold;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.score-positive {
+    color: #a5d6a7;
+    background: #133313;
+    border: 1px solid #2e7d32;
+}
+
+.score-negative {
+    color: #ef9a9a;
+    background: #330f0f;
+    border: 1px solid #e57373;
+}
+
+.score-neutral {
+    color: #bbb;
+    background: #2b2b2b;
+    border: 1px solid #666;
+}
+
+/* Generic Button Styles */
+button {
+    padding: 0.6rem 1.25rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+    background: #4CAF50;
+    color: black;
+    border: none;
+    border-radius: 0.3rem;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background: #45a049;
+}
+
+/* Typography */
+h1, h2 {
+    color: #eee;
+    margin-bottom: 1.25rem;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+}
+
+/* Animation Effects */
+@keyframes nodeHover {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        transform: translateY(-2px) scale(1.05);
+    }
+}
+
+.tree-node:hover {
+    animation: nodeHover 0.2s ease-out forwards;
+}
+
+.tree-node:hover .connection-line {
+    stroke-width: 3px;
+    opacity: 0.9;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 0.25rem;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 0.25rem;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
+/* Responsive Design */
+@media (max-width: 1400px) {
+    .page-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .algorithm-section {
+        flex: none;
+        width: 100%;
+        max-width: 25rem;
+        margin-right: 0;
+        margin-bottom: 1.25rem;
+    }
+
+    .visualization-section {
+        border-left: none;
+        border-top: 2px solid #333;
+        padding-left: 0;
+        padding-top: 2.5rem;
+        width: 100%;
+    }
+
+    .game-section {
+        flex: none;
+        margin: 0 auto;
+    }
+}
+
+/* Loading States */
+.tree-wrapper.loading::after {
+    content: "Loading...";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2em;
+    color: #ccc;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .tree-node:hover {
+        animation: none;
+    }
+
+    .tree-node,
+    .connection-line,
+    .cell,
+    button {
+        transition: none;
+    }
+}
+
+/* Focus States */
+button:focus,
+.cell:focus {
+    outline: 2px solid #2196F3;
+    outline-offset: 2px;
+}
+
+.algo-btn:focus {
+    outline: 2px solid #4CAF50;
+    outline-offset: 2px;
+}
+
+.player-indicator {
+    position: absolute;
+    top: -1.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.8rem;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.player-indicator.X {
+    background: #0d47a1;
+    color: #90caf9;
+    border: 1px solid #2196F3;
+}
+
+.player-indicator.O {
+    background: #b71c1c;
+    color: #ef9a9a;
+    border: 1px solid #F44336;
+}
+
+.algo-description {
+    margin-top: 20px;
+    padding: 15px;
+    background: #121212;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #ddd;
+    font-size: 0.95em;
+    line-height: 1.6;
+}
+
+.algo-description h2 {
+    font-size: 1.2em;
+    margin-bottom: 8px;
+    color: #4CAF50;
+}
+
+.learn-more-link {
+    color: #4CAF50;
+    text-decoration: underline;
+    margin-left: 5px;
+    font-weight: bold;
+}

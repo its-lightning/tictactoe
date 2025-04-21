@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe with AI Algorithms</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js"></script>
+    <style>
+        .algo-description {
+            margin-top: 20px;
+            padding: 15px;
+            background: #121212;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #ddd;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .algo-description h2 {
+            font-size: 1.2em;
+            margin-bottom: 8px;
+            color: #4CAF50;
+        }
+
+        .learn-more-link {
+            color: #4CAF50;
+            text-decoration: underline;
+            margin-left: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- Algorithm Selection Section -->
+        <div class="algorithm-section">
+            <h2>Choose AI Algorithm</h2>
+            <div class="algorithm-selector">
+                <button class="algo-btn active" data-algo="minmax">MinMax</button>
+                <button class="algo-btn" data-algo="alphabeta">Alpha-Beta</button>
+            </div>
+            <div class="algorithm-info">
+                <div class="stats">
+                    <p>Nodes Explored: <span id="nodes-count">0</span></p>
+                    <p>Algorithm: <span id="current-algo">MinMax</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Section -->
+        <div class="game-section">
+            <h1>Tic Tac Toe vs AI</h1>
+            <div class="game-info">
+                <p>You are X, AI is O</p>
+                <p id="status">Your turn!</p>
+            </div>
+            <div class="board" id="board">
+                {% for i in range(9) %}
+                <div class="cell" data-index="{{ i }}"></div>
+                {% endfor %}
+            </div>
+            <button id="reset-btn">Reset Game</button>
+
+            <!-- Algorithm Explanation -->
+            <div class="algo-description" id="algo-description">
+                <h2>Algorithm: Min-Max</h2>
+                <p>
+                    Min-Max is a decision rule used for minimizing the possible loss in a worst-case scenario. It is used to choose the optimal move for the player assuming that the opponent also plays optimally.
+                    <a href="https://en.wikipedia.org/wiki/Minimax" target="_blank" class="learn-more-link">Learn more ↗</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Tree Visualization -->
+        <div class="visualization-section">
+            <h2>Decision Tree</h2>
+            <div class="tree-wrapper">
+                <div id="tree-container" class="tree-container">
+                    <svg id="connections-svg" class="connections-layer"></svg>
+                    <div id="tree-content" class="tree-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const algoButtons = document.querySelectorAll('.algo-btn');
+        const algoDisplay = document.getElementById('current-algo');
+        const algoDescription = document.getElementById('algo-description');
+
+        const descriptions = {
+            minmax: `
+                <h2>Algorithm: Min-Max</h2>
+                <p>
+                    Min-Max is a decision rule used for minimizing the possible loss in a worst-case scenario. It is used to choose the optimal move for the player assuming that the opponent also plays optimally.
+                    <a href="https://en.wikipedia.org/wiki/Minimax" target="_blank" class="learn-more-link">Learn more.</a>
+                </p>
+            `,
+            alphabeta: `
+                <h2>Algorithm: Alpha-Beta Pruning</h2>
+                <p>
+                    Alpha-Beta Pruning is an optimization over Min-Max. It skips evaluating branches that can't affect the final decision, making it faster without changing the result.
+                    <a href="https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning" target="_blank" class="learn-more-link">Learn more.</a>
+                </p>
+            `
+        };
+
+        algoButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                algoButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const selectedAlgo = button.getAttribute('data-algo');
+                algoDisplay.textContent = selectedAlgo === 'minmax' ? 'MinMax' : 'Alpha-Beta';
+                algoDescription.innerHTML = descriptions[selectedAlgo];
+            });
+        });
+    </script>
+
+    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+</body>
+</html>
